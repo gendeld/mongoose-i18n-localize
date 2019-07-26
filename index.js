@@ -13,6 +13,19 @@ function ArrNoDupe(a) {
   }
   return r;
 }
+
+function flattenLanguageArr(obj, locale) {
+  for (const key in obj) {
+    if (Array.isArray(obj[key]) || typeof obj[key] === 'object') {
+      if (Array.isArray(obj[key]) && key === locale) {
+        obj[key] = obj[key][0];
+      } else {
+        flattenLanguageArr(obj[key]);
+      }
+    }
+  }
+}
+
 module.exports = function(schema, options) {
   var options_locales = ArrNoDupe(options.locales || []);
   var addLocales = function(pathname, schema) {
@@ -82,11 +95,17 @@ module.exports = function(schema, options) {
 
   var localizeOnly = function(obj, locale, localeDefault, toJSON) {
     var addLocalized = function(obj) {
+      flattenLanguageArr(obj, locale);
       for (var key in obj) {
+        console.warn(
+          `locale: ${locale}, localeDefault: ${localeDefault}\nkey: ${key}, obj[${key}]: ${JSON.stringify(
+            obj[key],
+          )}`,
+        );
         if (key === '_id') continue;
         else if (
           typeof obj[key] === 'object' &&
-          !Array.isArray(obj[key]) &&
+          !(Array.isArray(obj[key]) && !typeof obj[key][0] === 'object') &&
           !(obj[key] instanceof Date)
         ) {
           addLocalized(obj[key]);
@@ -104,6 +123,7 @@ module.exports = function(schema, options) {
         else if (localeDefault && key === localeDefault)
           obj.default = Array.isArray(obj[key]) ? obj[key][0] : obj[key];
       }
+      console.warn(`obj: ${JSON.stringify(obj)}`);
       return obj;
     };
 
