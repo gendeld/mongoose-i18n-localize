@@ -97,11 +97,11 @@ module.exports = function(schema, options) {
     var addLocalized = function(obj) {
       flattenLanguageArr(obj, locale);
       for (var key in obj) {
-        console.warn(
-          `locale: ${locale}, localeDefault: ${localeDefault}\nkey: ${key}, obj[${key}]: ${JSON.stringify(
-            obj[key],
-          )}`,
-        );
+//         console.warn(
+//           `locale: ${locale}, localeDefault: ${localeDefault}\nkey: ${key}, obj[${key}]: ${JSON.stringify(
+//             obj[key],
+//           )}`,
+//         );
         if (key === '_id') continue;
         else if (
           typeof obj[key] === 'object' &&
@@ -123,7 +123,7 @@ module.exports = function(schema, options) {
         else if (localeDefault && key === localeDefault)
           obj.default = Array.isArray(obj[key]) ? obj[key][0] : obj[key];
       }
-      console.warn(`obj: ${JSON.stringify(obj)}`);
+//       console.warn(`obj: ${JSON.stringify(obj)}`);
       return obj;
     };
 
